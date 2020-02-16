@@ -19,12 +19,14 @@
                 :fetch-suggestions="queryDepartSearch"
                 placeholder="请搜索出发城市"
                 @select="handleDepartSelect"
+                @blur=" handldDepartBlur"
                 class="el-autocomplete"
                 v-model="form.departCity"
                 ></el-autocomplete>
             </el-form-item>
             <el-form-item label="到达城市">
                 <el-autocomplete
+                @blur=" handldDepartBlur"
                 :fetch-suggestions="queryDestSearch"
                 placeholder="请搜索到达城市"
                 @select="handleDestSelect"
@@ -73,12 +75,19 @@ export default {
                 destCode: "",  // 到达城市代码
                 departDate: "", // 日期字符串
             },
+            //出发城市列表
+            departDate:[]
         }
     },
     methods: {
         // tab切换时触发
         handleSearchTab(item, index){
             
+        },
+        //出发城市失焦触发
+        handldDepartBlur(){
+            this.form.departCity =this.departDate[0].value;
+            this.form.departCode =this.departDate[0].sort;
         },
         
         // 出发城市输入框获得焦点时触发
@@ -101,7 +110,11 @@ export default {
                 console.log(data)
                 const newData = data.map(v =>{
                     v.value =v.name.replace('市','')
+                    // map返回的数组由return组成的
+                    return v
                 })
+                this.departDate =newData;
+
                 cb(data)
             })
             
@@ -121,6 +134,7 @@ export default {
         },
        
         // 出发城市下拉选择时触发
+        //点击才能拿到数据
         handleDepartSelect(item) {
              this.form.departCity =item.value;
             this.form.departCode =item.sort;
@@ -128,13 +142,14 @@ export default {
 
         // 目标城市下拉选择时触发
         handleDestSelect(item) {
-           
+           this.form.destCity = item.value;
+           this.form.destCode = item.sort;
 
         },
 
         // 确认选择日期时触发
         handleDate(value){
-           
+            this.form.departDate = moment(value).format("YYYY-MM-DD");
         },
 
         // 触发和目标城市切换时触发
