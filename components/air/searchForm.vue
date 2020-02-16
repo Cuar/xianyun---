@@ -8,7 +8,7 @@
             :class="{active: index === currentTab}">
                 <i :class="item.icon"></i>{{item.name}}
             </span>
-        </el-row>
+        </el-row> 
 
         <el-form class="search-form-content" ref="form" label-width="80px">
             <el-form-item label="出发城市">
@@ -28,6 +28,7 @@
                 placeholder="请搜索到达城市"
                 @select="handleDestSelect"
                 class="el-autocomplete"
+                v-model="form.destCode"
                 ></el-autocomplete>
             </el-form-item>
             <el-form-item label="出发时间">
@@ -35,6 +36,7 @@
                 <el-date-picker type="date" 
                 placeholder="请选择日期" 
                 style="width: 100%;"
+                v-model="form.departData"
                 @change="handleDate">
                 </el-date-picker>
             </el-form-item>
