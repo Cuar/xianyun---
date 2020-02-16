@@ -95,11 +95,17 @@ export default {
         },
         //出发城市失焦触发
         handldDepartBlur(){
+            if(this.departDate.length === 0){
+                return;
+            }
             this.form.departCity =this.departDate[0].value;
             this.form.departCode =this.departDate[0].sort;
         },
         //到达城市失焦
         handldDestBlur(){
+            if(this.destDate.length === 0){
+                return;
+            }
             this.form.destCity =this.destDate[0].value;
             this.form.destCode =this.destDate[0].sort;
         },
@@ -108,10 +114,14 @@ export default {
         //cb可以接受数组把数据展示出来
         queryDepartSearch(value, cb){
             //没有值返回
-            if(!value){
+             if(!value){
+                 //出现空白加载情况
+                 this.departDate = [];
+                 cb([]);
                 return;
             }
             //console.log(value)
+           
             this.$axios({
                  url: `/airs/city`,
                  params:{
@@ -140,6 +150,8 @@ export default {
         // value 是选中的值，cb是回调函数，接收要展示的列表
         queryDestSearch(value, cb){
              if(!value){
+                 this.destDate = [];
+                 cb([]);
                 return;
             }
             //console.log(value)
