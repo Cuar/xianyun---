@@ -1,5 +1,5 @@
 <template>
-    <div class="flight-item">
+    <div class="flight-item" @click="isShow = !isShow">
         <div>
             <!-- 显示的机票信息 -->
             <el-row type="flex" align="middle" class="flight-info">
@@ -26,7 +26,7 @@
                 </el-col>
             </el-row>
         </div>
-        <div class="flight-recommend">
+        <div class="flight-recommend" v-if="isShow">
             <!-- 隐藏的座位信息列表 -->
             <el-row type="flex"  justify="space-between" align="middle">
                 <el-col :span="4">低价推荐</el-col>
@@ -64,12 +64,22 @@
 export default {
     // props声明有多种写法，可以等于一个数组，也可以等于一个对象
     // props: ['data']
+    data(){
+            return {
+               isShow:false 
+            }
+        },
     props: {
+        
         data: {
+            
             type: Object, // 声明data属性的类型
             default: {},  // 如果组件调用时候不传data，采用默认值
-        }
+        },
+        
+        
     },
+    // 相隔时间
     computed:{
         rankTime(){
                const end = this.data.arr_time.split(":"); // 到达时间["14", "30"]
