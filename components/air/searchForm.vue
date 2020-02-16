@@ -13,7 +13,8 @@
         <el-form class="search-form-content" ref="form" label-width="80px">
             <el-form-item label="出发城市">
                 <!-- fetch-suggestions 返回输入建议的方法 -->
-                <!-- select 点击选中建议项时触发 -->
+                <!-- select 点击展开列表触发 -->
+                <!-- //:fetch-suggestions监听输入框输入，在实践中请求api -->
                 <el-autocomplete
                 :fetch-suggestions="queryDepartSearch"
                 placeholder="请搜索出发城市"
@@ -82,12 +83,31 @@ export default {
         
         // 出发城市输入框获得焦点时触发
         // value 是选中的值，cb是回调函数，接收要展示的列表
+        //cb可以接受数组把数据展示出来
         queryDepartSearch(value, cb){
-            cb([
-                {value: 1},
-                {value: 2},
-                {value: 3},
-            ]);
+            //没有值返回
+            if(!value){
+                return;
+            }
+            //console.log(value)
+            this.$axios({
+                 url: `/airs/city`,
+                 params:{
+                     name:value
+                 }
+            }).then(res =>{
+                //console.log(res)
+                const {data} =res.data
+                console.log(data)
+                const newData = data.map(v =>{
+                    v.value =v.name.replace('市','')
+                })
+                cb(data)
+            })
+            
+            //根据value请求城市列表
+           
+            //将数据展示出来
         },
 
         // 目标城市输入框获得焦点时触发
@@ -102,12 +122,14 @@ export default {
        
         // 出发城市下拉选择时触发
         handleDepartSelect(item) {
-            
+             this.form.departCity =item.value;
+            this.form.departCode =item.sort;
         },
 
         // 目标城市下拉选择时触发
         handleDestSelect(item) {
-            
+           
+
         },
 
         // 确认选择日期时触发
@@ -122,7 +144,7 @@ export default {
 
         // 提交表单是触发
         handleSubmit(){
-           
+           console.log(this.form)
         }
     },
     mounted() {
