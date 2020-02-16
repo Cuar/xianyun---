@@ -26,12 +26,12 @@
             </el-form-item>
             <el-form-item label="到达城市">
                 <el-autocomplete
-                @blur=" handldDepartBlur"
+                @blur=" handldDestBlur"
                 :fetch-suggestions="queryDestSearch"
                 placeholder="请搜索到达城市"
                 @select="handleDestSelect"
                 class="el-autocomplete"
-                v-model="form.destCode"
+                v-model="form.destCity"
                 ></el-autocomplete>
             </el-form-item>
             <el-form-item label="出发时间">
@@ -59,7 +59,9 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
+    
     data(){
         return {
             tabs: [
@@ -76,20 +78,31 @@ export default {
                 departDate: "", // 日期字符串
             },
             //出发城市列表
-            departDate:[]
+            departDate:[],
+            //到达城市列表
+            destDate:[]
         }
     },
     methods: {
         // tab切换时触发
         handleSearchTab(item, index){
-            
+             if(index == 1){
+                this.$alert('目前暂不支持往返，请使用单程选票！', '提示', {
+                    confirmButtonText: '确定',
+                    type: "warning"
+                });
+            }
         },
         //出发城市失焦触发
         handldDepartBlur(){
             this.form.departCity =this.departDate[0].value;
             this.form.departCode =this.departDate[0].sort;
         },
-        
+        //到达城市失焦
+        handldDestBlur(){
+            this.form.destCity =this.destDate[0].value;
+            this.form.destCode =this.destDate[0].sort;
+        },
         // 出发城市输入框获得焦点时触发
         // value 是选中的值，cb是回调函数，接收要展示的列表
         //cb可以接受数组把数据展示出来
@@ -115,7 +128,7 @@ export default {
                 })
                 this.departDate =newData;
 
-                cb(data)
+                cb(newData)
             })
             
             //根据value请求城市列表
@@ -126,24 +139,41 @@ export default {
         // 目标城市输入框获得焦点时触发
         // value 是选中的值，cb是回调函数，接收要展示的列表
         queryDestSearch(value, cb){
-            cb([
-                {value: 1},
-                {value: 2},
-                {value: 3},
-            ]);
+             if(!value){
+                return;
+            }
+            //console.log(value)
+            this.$axios({
+                 url: `/airs/city`,
+                 params:{
+                     name:value
+                 }
+            }).then(res =>{
+                //console.log(res)
+                const {data} =res.data
+               // console.log(data)
+                const newData = data.map(v =>{
+                    v.value =v.name.replace('市','')
+                    // map返回的数组由return组成的
+                    return v
+                })
+                this.destDate =newData;
+
+                cb(newData)
+            })
         },
        
         // 出发城市下拉选择时触发
         //点击才能拿到数据
         handleDepartSelect(item) {
-             this.form.departCity =item.value;
-            this.form.departCode =item.sort;
+            this.form.departCity = item.value;
+            this.form.departCode = item.sort;
         },
 
         // 目标城市下拉选择时触发
         handleDestSelect(item) {
-           this.form.destCity = item.value;
-           this.form.destCode = item.sort;
+             this.form.destCity = item.value;
+            this.form.destCode = item.sort;
 
         },
 
@@ -154,12 +184,37 @@ export default {
 
         // 触发和目标城市切换时触发
         handleReverse(){
-            
+            const {departCity, departCode, destCity, destCode} = this.form;
+
+            this.form.departCity = destCity;
+            this.form.departCode = destCode;
+
+            this.form.destCity = departCity;
+            this.form.destCode = departCode;
         },
 
         // 提交表单是触发
         handleSubmit(){
            console.log(this.form)
+            if(!this.form.departCity){
+                this.$message.error("请输入出发城市");
+                return;
+            }
+
+            if(!this.form.destCity){
+                this.$message.error("请输入到达城市");
+                return;
+            }
+
+            if(!this.form.departDate){
+                this.$message.error("请选择时间");
+                return;
+            }
+            this.$router.push({
+                path:'/air/flights',
+                //query 是url参数
+                query:this.form
+            })
         }
     },
     mounted() {
