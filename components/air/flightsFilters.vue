@@ -66,7 +66,8 @@
         </div>
         <!-- 渲染空的字符串，只需要监听功能 -->
         <!-- <span>{{filter}}</span> -->
-        <span>{{filter}}</span>
+                <span>{{filter}}</span>
+
     </div>
 </template>
 
@@ -135,11 +136,15 @@ export default {
         
         // 撤销条件时候触发
         handleFiltersCancel(){
-            
+            this.airport = '';
+            this.flightTimes='';
+            this.company='';
+            this.airSize='';
         },
     },
-    computed:{
-       filter(){
+ computed: {
+        // 渲染空的字符串，只需要监听功能
+        filter(){
             const newData = this.data.flights.filter(v => {
                 // 假设当前的数据都是符合条件
                 let valid = true;
@@ -178,8 +183,7 @@ export default {
             this.$emit("getData", newData);
             return "";
         }  
-    
-}
+    },
 }
 </script>
 

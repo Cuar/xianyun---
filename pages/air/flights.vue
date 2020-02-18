@@ -63,7 +63,9 @@ export default {
             cacheFlightsData: {
                 
                 info:{},
-                options:{}
+                options:{},
+                flights:[],
+                
             }, // 航班总数据
            // dataList: []   ,  // 航班列表数据，用于循环flightsItem组件，单独出来是因为要分页
 
@@ -73,6 +75,24 @@ export default {
             pageSize: 5,
             //总条数
             total:0,
+        }
+    },
+    computed: {
+        // 切割之后返回的数组（当前页面要展示的数组）
+        // 计算属性函数内部引用实例（this）的属性一旦发生了变化，函数会重新执行返回新的值
+        dataList(){
+            // 判断flightsData有没有值
+            if(!this.flightsData.flights){
+                // 没有值返回一个空数组
+                return [];
+            }
+
+            // 第一页是0-5，第二页是5-10，第三页是10-15
+            const arr = this.flightsData.flights.slice(
+                (this.pageIndex - 1) * this.pageSize, 
+                this.pageIndex * this.pageSize
+            );
+            return arr;
         }
     },
     mounted(){
@@ -108,23 +128,7 @@ export default {
           this.total =arr.length;
       }
     },
-    computed:{
-        //计算属性函数内部引用实例（this）的属性一旦发生变化，函数就会重新执行返回新值
-          dataList(){
-            // 判断flightsData有没有值
-            if(!this.flightsData.flights){
-                // 没有值返回一个空数组
-                return [];
-            }
-
-            // 第一页是0-5，第二页是5-10，第三页是10-15
-            const arr = this.flightsData.flights.slice(
-                (this.pageIndex - 1) * this.pageSize, 
-                this.pageIndex * this.pageSize
-            );
-            return arr;
-        }
-    }
+   
 }
 </script>
 
