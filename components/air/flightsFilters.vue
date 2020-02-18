@@ -21,7 +21,7 @@
                      v-for="(item,index) in data.options.flightTimes"
                     :key='index'
                     :label="`${item.from}:00 - ${item.to}:00` "
-                    value="1"
+                    :value="`${item.from},${item.to}`"
 
                     >
                     </el-option>
@@ -91,12 +91,23 @@ export default {
     methods: {
         // 选择机场时候触发
         handleAirport(value){
-            
+            const newData =this.data.flights.filter(v =>{
+                return v.org_airport_name ===value
+            })
+            this.$emit('getData',newData)
         },
 
         // 选择出发时间时候触发
         handleFlightTimes(value){
-            
+            const arr =value.split(',');
+            const newData =this.data.flights.filter(v =>{
+                //Number() 函数把对象的值转换为数字
+                const hours = Number(v.dep_time.split(":")[0]);
+
+                  return Number(arr[0]) <= hours && hours < Number(arr[1]);
+
+            })
+            this.$emit("getData", newData);
         },
 
          // 选择航空公司时候触发
@@ -113,7 +124,10 @@ export default {
 
          // 选择机型时候触发
         handleAirSize(value){
-           
+             const newData = this.data.flights.filter(v => {
+            return v.plane_size === value;
+             })
+               this.$emit("getData", newData);
         },
         
         // 撤销条件时候触发
